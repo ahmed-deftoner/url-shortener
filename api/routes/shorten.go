@@ -108,5 +108,4 @@ func ShortenURL(c *fiber.Ctx) error {
 	resp.RateLimitRest = ttl / time.Nanosecond / time.Minute
 
 	resp.CustomShort = os.Getenv("DOMAIN") + "/" + id
-
 }
