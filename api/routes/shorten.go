@@ -91,6 +91,22 @@ func ShortenURL(c *fiber.Ctx) error {
 		})
 	}
 
+	resp := respomse{
+		URL:           body.URL,
+		CustomShort:   "",
+		Expiry:        body.Expiry,
+		RateRemaining: 10,
+		RateLimitRest: 30,
+	}
+
 	r2.Decr(database.Ctx, c.IP())
+
+	val, _ = r2.Get(database.Ctx, c.IP()).Result()
+	resp.RateRemaining, _ = strconv.Atoi(val)
+
+	ttl, _ := r2.TTL(database.Ctx, c.IP()).Result()
+	resp.RateLimitRest = ttl / time.Nanosecond / time.Minute
+
+	resp.CustomShort = os.Getenv("DOMAIN") + "/" + id
 
 }
